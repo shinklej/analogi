@@ -51,8 +51,8 @@ Tweakable bits of the interface are displayed as <span class='tw'>such</span>
 </div>
 
 <div class='top10header'>Latest Version</div>
-<div class="introbody">This is a fork of ANALOGI, the original authors latest version can be found <a href='https://github.com/ECSC/analogi/downloads'>here</a></div>
-<div class="introbody">This fork is compatible with PHP 7.0.15, MySQL 5.7.13 and Ubuntu 0.16.04.2, the latest version of this fork can be found <a href='https://github.com/shinklej/analogi/downloads'>here</a></div>
+<div class="introbody">This is a fork of ANALOGI, the original authors latest version can be found <a href='https://github.com/ECSC/analogi'>here</a></div>
+<div class="introbody">This fork is compatible with PHP 7.0.15, MySQL 5.7.13 and Ubuntu 0.16.04.2, the latest version of this fork can be found <a href='https://github.com/shinklej/analogi'>here</a></div>
 
 
 <div class='top10header'>Wiki</div>
