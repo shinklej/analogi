@@ -45,9 +45,9 @@ $glb_debug=0;
 # implemented = yes
 $attackfrom=date("Hi dmy", (time()-(100*3600)));
 $glb_slidehow_pages=array(
-		1 => "index.php?level=9&hours=72&field=rule_id",
-		2 => "index.php?level=9&hours=72&field=source",
-		3 => "index.php?level=9&hours=72&field=level",
+		1 => "index.php?level=0&hours=72&field=rule_id",
+		2 => "index.php?level=0&hours=72&field=source",
+		3 => "index.php?level=0&hours=72&field=level",
 		4 => "massmonitoring.php?",
 		5 => "detail.php?rulematch=attack&from=".$attackfrom
 		);
