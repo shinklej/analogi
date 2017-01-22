@@ -96,8 +96,8 @@ if(isset($_GET['rule_id']) && preg_match("/^[0-9,\ ]+$/", $_GET['rule_id'])){
 		}
 
 		$query="select signature.description from signature where rule_id=".$value;
-		$result=mysql_query($query, $db_ossec);
-		$row = @mysql_fetch_assoc($result);
+		$result=mysqli_query($db_ossec, $query);
+		$row = @mysqli_fetch_assoc($result);
 		$noterule_id.="<span style='font-weight:bold;' >Rule ".$value."</span>: ".$row['description']."<br/>";
 	}
 	$where.=")";
@@ -181,7 +181,7 @@ if(isset($_GET['limit']) && is_numeric($_GET['limit']) && $_GET['limit']<1000){
 		and alert.id=data.id
 		".$where."
 		ORDER BY alert.timestamp DESC";
-	$resulttable=mysql_query($querytable, $db_ossec);
+	$resulttable=mysqli_query($db_ossec, $querytable);
 
 
 header("Content-type: text/csv");  
@@ -199,7 +199,7 @@ echo "\n";
 
 
 
-while($rowtable = @mysql_fetch_assoc($resulttable)){
+while($rowtable = @mysqli_fetch_assoc($resulttable)){
 
 	echo htmlspecialchars($rowtable['id'])."	";
 	echo htmlspecialchars($rowtable['rule'])."	";

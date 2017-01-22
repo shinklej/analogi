@@ -5,12 +5,12 @@
  */
 
 define ('DB_USER_O', 'ossecuser');
-define ('DB_PASSWORD_O', 'password');
+define ('DB_PASSWORD_O', 'ossec');
 define ('DB_HOST_O', '127.0.0.1');
 define ('DB_NAME_O', 'ossec');
 
-$db_ossec = mysql_connect (DB_HOST_O, DB_USER_O, DB_PASSWORD_O) OR die ('Could not connect to SQL : ' . mysql_error() . "<br/>Click <a href='' onclick='document.cookie=\"ossecdbjs=;expires=Thu, 01 Jan 1970 00:00:00 GMT\"' >HERE</a> to select your main OSSEC DB");
+$db_ossec = mysqli_connect (DB_HOST_O, DB_USER_O, DB_PASSWORD_O) OR die ('Could not connect to SQL : ' . mysqli_error() . "<br/>Click <a href='' onclick='document.cookie=\"ossecdbjs=;expires=Thu, 01 Jan 1970 00:00:00 GMT\"' >HERE</a> to select your main OSSEC DB");
 
-mysql_select_db (DB_NAME_O, $db_ossec) OR die ('Could not select the database : ' . mysql_error() . "<br/>Click <a href='' onclick='document.cookie=\"ossecdbjs=;expires=Thu, 01 Jan 1970 00:00:00 GMT\"' >HERE</a> to select your main OSSEC DB");
+mysqli_select_db ($db_ossec, DB_NAME_O) OR die ('Could not select the database : ' . mysqli_error() . "<br/>Click <a href='' onclick='document.cookie=\"ossecdbjs=;expires=Thu, 01 Jan 1970 00:00:00 GMT\"' >HERE</a> to select your main OSSEC DB");
 
 ?>

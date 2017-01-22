@@ -43,8 +43,8 @@ $query="SELECT alert.timestamp as first
 	WHERE alert.src_ip='".ip2long($ip)."'
 	ORDER BY alert.timestamp
 	LIMIT 1";
-$result=mysql_query($query, $db_ossec);
-$row = @mysql_fetch_assoc($result);
+$result=mysqli_query($db_ossec, $query);
+$row = @mysqli_fetch_assoc($result);
 $firstinstance = $row['first'];
 	
 
@@ -59,9 +59,9 @@ if($glb_debug==1){
 	$seenat.=$query;
 	
 }else{
-	$result=mysql_query($query, $db_ossec);
+	$result=mysqli_query($db_ossec, $query);
 	$seenat="";
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 		$seenat.="<a href='detail.php?datamatch=".$ip."&source=".$row['loc_name']."&level=7'>".$row['loc_name']."</a>, ";
 	}
 }
@@ -101,7 +101,8 @@ include "page_refresh.php";
 
       google.maps.event.addDomListener(window, 'load', initialize);
     </script>
-
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCWQL3YFDBpsMYzNl2NvVG2Y1mrSlzSnyE&callback=initMap"
+    async defer></script>
 
 
 </head>

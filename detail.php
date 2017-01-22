@@ -3,6 +3,8 @@
  * Copyright (c) 2012 Andy 'Rimmer' Shepherd <andrew.shepherd@ecsc.co.uk> (ECSC Ltd).
  * This program is free software; Distributed under the terms of the GNU GPL v3.
  */
+
+
 require './top.php';
 
 ###  Get the criteria from the URL, these are used to populate the graph, and to populate the filter options further down
@@ -30,10 +32,10 @@ if(isset($_GET['levelmax']) && preg_match("/^[0-9]+$/", $_GET['levelmax'])){
 	$where.="";
 }
 $query="SELECT distinct(level) FROM signature ORDER BY level";
-$result=mysql_query($query, $db_ossec);
+$result=mysqli_query($db_ossec,$query);
 $filterlevelmin="";
 $filterlevelmax="";
-while($row = @mysql_fetch_assoc($result)){
+while($row = @mysqli_fetch_assoc($result)){
 	$selectedmin="";
 	$selectedmax="";
 	if($row['level']==$inputlevelmin){
@@ -51,7 +53,7 @@ while($row = @mysql_fetch_assoc($result)){
 if(isset($_GET['from']) && preg_match("/^[0-9\ ]+$/", $_GET['from'])){
 	$inputfrom=$_GET['from'];
 	$filterfrom=$inputfrom;
-	$f=split(" ",$inputfrom);
+	$f=explode(" ",$inputfrom);
 	$sqlfrom=mktime(substr($f[0], 0, 2), substr($f[0], 2, 4), 0,substr($f[1], 2, 2),substr($f[1], 0, 2),substr($f[1], 4, 2));
 	$where.="AND alert.timestamp>=".$sqlfrom." ";
 }else{
@@ -65,7 +67,7 @@ if(isset($_GET['from']) && preg_match("/^[0-9\ ]+$/", $_GET['from'])){
 if(isset($_GET['to']) && preg_match("/^[0-9\ ]+$/", $_GET['to'])){
 	$inputto=$_GET['to'];
 	$filterto=$inputto;
-	$t=split(" ",$inputto);
+	$t=explode(" ",$inputto);
 	$sqlto=mktime(substr($t[0], 0, 2), substr($t[0], 2, 4), 0,substr($t[1], 2, 2),substr($t[1], 0, 2),substr($t[1], 4, 2));
 	$lastgraphplot=$sqlto;
 	$where.="AND alert.timestamp<=".$sqlto." ";
@@ -86,9 +88,9 @@ if(isset($_GET['source']) && strlen($_GET['source'])>0){
 	$where.="";
 }
 $query="SELECT distinct(substring_index(substring_index(name, ' ', 1), '->', 1)) as dname FROM location ORDER BY dname";
-$result=mysql_query($query, $db_ossec);
+$result=mysqli_query($db_ossec,$query);
 $filtersource="";
-while($row = @mysql_fetch_assoc($result)){
+while($row = @mysqli_fetch_assoc($result)){
 	$selected="";
 	if($row['dname']==$inputsource){
 		$selected=" SELECTED";
@@ -105,9 +107,9 @@ if(isset($_GET['path']) && strlen($_GET['path'])>0){
 	$where.="";
 }
 $query="SELECT distinct(substring_index(name,'->',-1)) as dname FROM location ORDER BY dname;";
-$result=mysql_query($query, $db_ossec);
+$result=mysqli_query($db_ossec,$query);
 $filterpath="";
-while($row = @mysql_fetch_assoc($result)){
+while($row = @mysqli_fetch_assoc($result)){
 	$selected="";
 	if($row['dname']==$inputpath){
 		$selected=" SELECTED";
@@ -131,8 +133,8 @@ if(isset($_GET['rule_id']) && preg_match("/^[0-9,\ ]+$/", $_GET['rule_id'])){
 		}
 
 		$query="select signature.description from signature where rule_id=".$value;
-		$result=mysql_query($query, $db_ossec);
-		$row = @mysql_fetch_assoc($result);
+		$result=mysqli_query($db_ossec,$query);
+		$row = @mysqli_fetch_assoc($result);
 		$noterule_id.="<span style='font-weight:bold;' >Rule ".$value."</span>: ".$row['description']."<br/>";
 	}
 	$where.=")";
@@ -217,9 +219,9 @@ if(isset($_GET['category']) && preg_match("/^[0-9]+$/", $_GET['category'])){
 $query="SELECT *
 	FROM category
 	ORDER BY cat_name";
-$result=mysql_query($query, $db_ossec);
+$result=mysqli_query($db_ossec,$query);
 $filtercategory="";
-while($row = @mysql_fetch_assoc($result)){
+while($row = @mysqli_fetch_assoc($result)){
 	$selected="";
         if($row['cat_id']==$inputcategory){
                 $selected=" SELECTED";
@@ -297,7 +299,6 @@ include "page_refresh.php";
 
 	function databasetest(){
 		<!--  If no data, alerts will be created in here  -->
-		<?php #includeme('./databasetest.php') ?>
 		<?php include './databasetest.php' ?>
 
 	}
@@ -495,8 +496,8 @@ include "page_refresh.php";
 		and alert.rule_id=signature.rule_id
 		and alert.id=data.id
 		".$where;
-	$resultcounttable=mysql_query($querycounttable, $db_ossec);
-	$rowcounttable = @mysql_fetch_assoc($resultcounttable);
+	$resultcounttable=mysqli_query($db_ossec,$querycounttable);
+	$rowcounttable = @mysqli_fetch_assoc($resultcounttable);
 	$resultablerows=$rowcounttable['res_cnt'];
 	
 	# Fetch the actual rows of data for the table
@@ -510,7 +511,7 @@ include "page_refresh.php";
 		".$wherecategory_and."
 		ORDER BY alert.timestamp DESC
 		LIMIT ".$inputlimit;		
-	$resulttable=mysql_query($querytable, $db_ossec);
+	$resulttable=mysqli_query($db_ossec,$querytable);
 
 	$mainstring.= "<div class='newboxes toggled'><table class='dump sortable' id='sortabletable'  style='width:100%' ><tr>
 		<th>ID</th><th>Rule</th><th>Lvl</th><th>Timestamp</th><th>Location</th><th>IP</th><th>Data</th>
@@ -530,7 +531,7 @@ include "page_refresh.php";
 	$datasummary = array();
 	
 
-	while($rowtable = @mysql_fetch_assoc($resulttable)){
+	while($rowtable = @mysqli_fetch_assoc($resulttable)){
 
 		# Dump each line to the table, be careful, this data is fromt the logs and should not be trusted
 		if(isset($_GET['datamatch']) && strlen($_GET['datamatch'])>0){
@@ -574,7 +575,7 @@ include "page_refresh.php";
 			|| preg_match("/\w+\.\w+\.\w+/", $phrase2) # match... file paths?
 			|| preg_match("/^[A-Z_]+\/[0-9]+$/", $phrase2) # match HTTP return codes and proxy cache peer
 			){
-				$datasummary[$phrase2]++;
+//				$datasummary[""+$phrase2+""]++;
 			}	
 		}
 	}

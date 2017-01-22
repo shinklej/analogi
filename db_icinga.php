@@ -9,7 +9,7 @@ define ('DB_PASSWORD_I', 'icinga');
 define ('DB_HOST_I', '127.0.0.1');
 define ('DB_NAME_I', 'icinga');
 
-$db_icinga = mysql_connect (DB_HOST_I, DB_USER_I, DB_PASSWORD_I) OR die ('Could not connect to SQL : ' . mysql_error() );
-mysql_select_db (DB_NAME_I, $db_icinga) OR die ('Could not select the database : ' . mysql_error() );
+$db_icinga = mysqli_connect (DB_HOST_I, DB_USER_I, DB_PASSWORD_I) OR die ('Could not connect to SQL : ' . mysqli_error() );
+mysqli_select_db ($db_icinga, DB_NAME_I) OR die ('Could not select the database : ' . mysqli_error() );
 
 ?>

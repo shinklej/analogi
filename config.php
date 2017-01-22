@@ -62,7 +62,7 @@ $glb_autorefresh=600;
 # Default level
 # Default alert level for the main graph
 # implemented = yes
-$glb_level=7;
+$glb_level=0;
 
 # Default hours
 # Defult hours count for the main graph
@@ -118,8 +118,8 @@ $glb_detailsql=0;
 # The format of the timestamp column on the detail page, useful if you copy/paste to spreadsheet/csv
 # implemented = yes
 # Reference : http://php.net/manual/en/function.date.php
-#$glb_detailtimestamp="H:i, jS m/Y";
-$glb_detailtimestamp="Y/m/d g:i:s";
+$glb_detailtimestamp="H:i, jS m/Y";
+#glb_detailtimestamp="Y/m/d g:i:s";
 #$glb_detailtimestamp="H:i, jS m/Y";
 
 # Highlighted words
