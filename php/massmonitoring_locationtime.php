@@ -24,7 +24,7 @@ if($glb_debug==1){
 
 }else{
 
-	if(!$result=mysql_query($query, $db_ossec)){
+	if(!$result=mysqli_query($db_ossec,$query)){
 		echo "SQL Error:".$query;
 	}
 	
@@ -33,7 +33,7 @@ if($glb_debug==1){
 		var chartData2 = [";
 
 	$mainstring2="";
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 		$loctime[$row['res_time']] = $row['res_cnt'];
 	}
 	
@@ -46,7 +46,7 @@ if($glb_debug==1){
 	
 	}
 	
-	$mainstring2=eregi_replace(',$', '', $mainstring2); 
+	$mainstring2=str_replace(',$', '', $mainstring2); 
 	$mainstring2.="
 		];";
 	

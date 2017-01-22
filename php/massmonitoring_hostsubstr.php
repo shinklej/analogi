@@ -22,13 +22,13 @@ if($glb_debug==1){
 }else{
 
 
-	if(!$result=mysql_query($query, $db_ossec)){
+	if(!$result=mysqli_query($db_ossec,$query)){
 		echo "SQL Error:".$query;
 	}
 	
 	
 	$hostsubstrarray=array();
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 		# Loop results
 		foreach($glb_mass_hostsubstr as $hostsubstr){
 			#Loop substrings for hosts
@@ -73,10 +73,10 @@ if($glb_debug==1){
 			$mainstring3.=" ".$k.":".$v.",";	
 	
 		}
-		$mainstring3=eregi_replace(',$', '', $mainstring3); 
+		$mainstring3=str_replace(',$', '', $mainstring3); 
 		$mainstring3.="}";
 	}
-	$mainstring3=eregi_replace(',$', '', $mainstring3); 
+	$mainstring3=str_replace(',$', '', $mainstring3); 
 	$mainstring3.="
 		];";
 	

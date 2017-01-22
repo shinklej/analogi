@@ -4,10 +4,11 @@
  * This program is free software; Distributed under the terms of the GNU GPL v3.
  */
 
+mysqli_select_db ($db_ossec, DB_NAME_O) OR die ('Could not select the database : ' . mysqli_error());
 # The graph data 'series' can be broken down in several ways
 $query="select concat(substring(alert.timestamp, 1, 5), \"00000\") as res_time, count(alert.id) as res_cnt
 		from alert
-		group by substring(alert.timestamp, 1, 5)
+		group by alert.timestamp
 		order by substring(alert.timestamp, 1, 5)";
 
 
@@ -19,7 +20,7 @@ if($glb_debug==1){
 
 
 }else{
-	if(!$result=mysql_query($query, $db_ossec)){
+	if(!$result=mysqli_query($db_ossec,$query)){
 	        echo "SQL Error:".$query;
 	}
 
@@ -29,7 +30,7 @@ if($glb_debug==1){
 	$i=0;
 	$alerttotal=0;
 	$sizetotal=0;
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 	
 	        if($i>0){
 	                $mainstring.=",";

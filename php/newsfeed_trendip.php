@@ -49,8 +49,8 @@ if($glb_debug==1){
 	echo $query;
 }else{
 	$whereinorderby="";
-	$result=mysql_query($query, $db_ossec);
-	while($row = @mysql_fetch_assoc($result)){
+	$result=mysqli_query($db_ossec, $query);
+	while($row = @mysqli_fetch_assoc($result)){
 		$whereinorderby.="'".$row['res_ip']."',";
 	}
 	$whereinorderby=preg_replace('/,$/','',$whereinorderby);
@@ -87,9 +87,9 @@ if($glb_debug==1){
 	echo "<table>";
 	echo "<tr><th>IP</th><th>Groups (count)</th></tr>";
 	
-	$result=mysql_query($query, $db_ossec);
+	$result=mysqli_query($db_ossec, $query);
 	$tmpip=array();
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 	
 		$tmpip[$row['res_ip']][$row['res_id']."|".$row['res_name']]=$row['res_cnt'];
 	

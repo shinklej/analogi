@@ -14,7 +14,7 @@
 		ORDER BY t1 DESC 
 		LIMIT ".$glb_threatlimit.";";
 
-	$result=mysql_query($query, $db_ossec);
+	$result=mysqli_query($db_ossec, $query);
 	
 	
 	$threatcount=0;
@@ -31,7 +31,7 @@
 	";
 
 
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 		$threatcount=1;
 		
 		echo "<tr>

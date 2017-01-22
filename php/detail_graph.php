@@ -5,6 +5,10 @@
  */
 
 
+if (!$wherecategory_and) {
+$wherecategory_and = '';
+}
+
 ## Note - I know that a substring of a timestamp isn't that clean, but this is built for high peformance on a huge table
 
 $mainstring="";
@@ -41,7 +45,7 @@ if(isset($_GET['breakdown']) && $_GET['breakdown']=='level'){
 	# breakdown by level
 
 	$keyprepend="Level ";
-	$querychart="SELECT concat(substring(alert.timestamp, 1, $substrsize), '$zeros') as res_time, count(alert.id) as res_cnt, signature.level as res_value
+	$querychart="SELECT ANY_VALUE(concat(substring(alert.timestamp, 1, $substrsize), '$zeros')) as res_time, count(alert.id) as res_cnt, signature.level as res_value
 		FROM alert, location, signature, data ".$wherecategory_tables."
 		WHERE 1=1
 		AND alert.location_id=location.id
@@ -56,7 +60,7 @@ if(isset($_GET['breakdown']) && $_GET['breakdown']=='level'){
 	# breakdown is set to source OR a source has been chosen
 
 	$keyprepend="Rule ";
-	$querychart="SELECT concat(substring(alert.timestamp, 1, $substrsize), '$zeros') as res_time, count(alert.id) as res_cnt, alert.rule_id as res_value
+	$querychart="SELECT ANY_VALUE(concat(substring(alert.timestamp, 1, $substrsize), '$zeros')) as res_time, count(alert.id) as res_cnt, alert.rule_id as res_value
 		FROM alert, location, signature, data ".$wherecategory_tables."
 		WHERE 1=1
 		AND alert.location_id=location.id
@@ -68,7 +72,7 @@ if(isset($_GET['breakdown']) && $_GET['breakdown']=='level'){
 		ORDER BY substring(alert.timestamp, 1, $substrsize), alert.rule_id";
 }else{
 	# Default - i.e. if not chosen, or if set to 'source'
-	$querychart="SELECT concat(substring(alert.timestamp, 1, $substrsize), '$zeros') as res_time, count(alert.id) as res_cnt, SUBSTRING_INDEX(location.name, ' ', 1) as res_value
+	$querychart="SELECT ANY_VALUE(concat(substring(alert.timestamp, 1, $substrsize), '$zeros')) as res_time, count(alert.id) as res_cnt, SUBSTRING_INDEX(location.name, ' ', 1) as res_value
 		FROM alert, location, signature, data ".$wherecategory_tables."
 		WHERE 1=1
 		AND alert.location_id=location.id
@@ -82,19 +86,28 @@ if(isset($_GET['breakdown']) && $_GET['breakdown']=='level'){
 }
 
 
-$resultchart=mysql_query($querychart, $db_ossec);
+$resultchart=mysqli_query($db_ossec,$querychart);
 
 $tmpdate="";
 $timegrouping=array();
 $arraylocations=array();
 $arraylocationsunique=array();
 
+//echo "\n";
+//echo "\n";
+
+//echo "/"."/";
+//echo $querychart;
+//echo "\n";
+//echo "\n";
+
+
 echo "var chartData = [
 	";
 
 $anydata=0;
 
-while($rowchart = @mysql_fetch_assoc($resultchart)){
+while($rowchart = @mysqli_fetch_assoc($resultchart)){
 	# XXX Compile a list of all hosts, maybe a better way to do this than have an array the size of the alert table
 	$locationname=preg_replace($glb_hostnamereplace,"",$rowchart['res_value']);
 	array_push($arraylocations, $locationname);

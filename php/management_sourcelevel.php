@@ -4,13 +4,9 @@
  * This program is free software; Distributed under the terms of the GNU GPL v3.
  */
 
-$query="SELECT count(alert.id) as res_cnt, SUBSTRING_INDEX(SUBSTRING_INDEX(location.name, ' ', 1), '->', 1) as res_name, location.id as res_id , signature.level as res_level       
-	FROM alert, location, signature  
-	WHERE alert.location_id = location.id         
-	AND alert.rule_id = signature.rule_id         
-	GROUP BY res_name, res_level
-	ORDER BY res_name, res_level";
+include 'db_ossec.php';
 
+$query="SELECT count(alert.id) as res_cnt, SUBSTRING_INDEX(SUBSTRING_INDEX(location.name, ' ', 1), '->', 1) as res_name, location.id as res_id , signature.level as res_level FROM alert, location, signature WHERE alert.location_id = location.id AND alert.rule_id = signature.rule_id GROUP BY location.id, res_name, res_level ORDER BY res_name, res_level;";
 
 
 
@@ -22,14 +18,14 @@ if($glb_debug==1){
 	$clientvsleveldebugstring.=$query;
 
 }else{
-	if(!$result=mysql_query($query, $db_ossec)){
+	if(!$result=mysqli_query($db_ossec, $query)){
 		echo "SQL Error:".$query;
 	}
 
 	$whilelocation="";
 	$mainstring="";
 
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 		$sourcelevel[$row['res_name']][$row['res_level']] = $row['res_cnt'];
 	}
 
@@ -50,7 +46,7 @@ if($glb_debug==1){
 		$i=1;
 	
 		$mainstring.="
-			{source:\"".preg_replace($glb_hostnamereplace,"",$key)."\",";
+			{source:\"".str_replace($glb_hostnamereplace,"",$key)."\",";
 	
 		foreach($val as $k=>$v){
 			# $k = level
@@ -59,10 +55,10 @@ if($glb_debug==1){
 			$mainstring.=" level".$k.":".$v.",";	
 	
 		}
-		$mainstring=eregi_replace(',$', '', $mainstring); 
+		$mainstring=str_replace(',$', '', $mainstring); 
 		$mainstring.="}";
 	}
-	$mainstring=eregi_replace(',$', '', $mainstring); 
+	$mainstring=str_replace(',$', '', $mainstring); 
 	$mainstring.="
 		];";
 }
@@ -70,7 +66,7 @@ if($glb_debug==1){
 echo $mainstring;
 
 # As I cannot see a way for amcharts to be in a dynamic height graph.... lets use PHP to adjust it on page load...
-$graphheight="  document.getElementById('chartdiv').style.height='".($graphcount*25)."px';";
+$graphheight="  document.getElementById('chartdiv').style.height='".($graphcount*100)."px';";
 
 #################################
 

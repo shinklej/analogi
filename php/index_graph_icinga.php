@@ -18,8 +18,8 @@ AND Unix_Timestamp(start_time)>".(time()-($inputhours*3600)).";";
 
 $i=0;
 
-$result=mysql_query($query, $db_icinga);
-while($row = @mysql_fetch_assoc($result)){
+$result=mysqli_query($db_ossec, $query);
+while($row = @mysqli_fetch_assoc($result)){
 
 	        $itime= "new Date(".date("Y", $row['itime']).", ".(date("m", $row['itime'])-1).", ".date("d", $row['itime']).", ".date("H", $row['itime']).", ".date("i", $row['itime']).")";
 

@@ -29,9 +29,9 @@ for($j=0; $j<$glb_trendweeks;$j++){
 
 $where=substr($where,0,-3).")";
 
-$query="SELECT 
-		CONCAT(substring(alert.timestamp, 1, ".$trend_window_substr."), '".$trend_window_substrzero."') as res_time, 
-		COUNT(alert.id) as res_cnt, 
+$query="SELECT ANY_VALUE(CONCAT(substring(alert.timestamp, 1, ".$trend_window_substr."), '".$trend_window_substrzero."'))
+	as res_time,
+		COUNT(alert.id) as res_cnt,
 		SUBSTRING_INDEX(SUBSTRING_INDEX(location.name, ' ', 1), '->', 1) as res_loc,
 		CONCAT(alert.rule_id) as res_field
 	FROM alert, location, signature
@@ -48,9 +48,9 @@ if($glb_debug==1){
 	echo "<div style='font-size:24px; color:red;font-family: Helvetica,Arial,sans-serif;'>Debug</div>"; 
 	echo $query;
 }else{
-	$result=mysql_query($query, $db_ossec);
+	$result=mysqli_query($db_ossec, $query) or die(mysqli_error($db_ossec));
 
-	while($row = @mysql_fetch_assoc($result)){
+	while($row = @mysqli_fetch_assoc($result)){
 		$trendarray[$row['res_loc']][$row['res_field']][$row['res_time']]=$row['res_cnt'];
 	}
 
@@ -107,21 +107,23 @@ if($glb_debug==1){
 		}
 	}
 	
-	arsort($finaltrendinfo);
+	@arsort($finaltrendinfo);
 	
 	echo "<div class='clr' style='padding-bottom:0px'></div>";
 	
 	echo "<table>";
 	echo "<tr><th>Percent</th><th>Count</th><th>Host</th><th>Rule</th><th>Level</th></tr>";
 	
+
+	if (isset($finaltrendinfo)) {
 	foreach($finaltrendinfo as $one=>$two){
 		$details=preg_split("/\|\|/", $one);
 	
 		$query="SELECT description as descr, level as lvl
 			FROM signature
 			WHERE signature.rule_id=".$details[1];
-		$result=mysql_query($query, $db_ossec);
-		$row = @mysql_fetch_assoc($result);
+		$result=mysqli_query($db_ossec, $query);
+		$row = @mysqli_fetch_assoc($result);
 	
 		echo "<tr>
 			<td><a href='./detail.php?rule_id=".$details[1]."&from=".date("Hi dmy", time()-(86400*30))."&source=".$details[0]."'>".number_format($two)."%</a></td>
@@ -130,6 +132,7 @@ if($glb_debug==1){
 			<td>".$row['descr']."</a></td>
 			<td>".$row['lvl']."</td>
 			</tr>";
+	}
 	}
 	
 	echo "</table>";

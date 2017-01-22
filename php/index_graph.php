@@ -45,7 +45,7 @@ if((isset($_GET['field']) && $_GET['field']=='path') || (!isset($_GET['field']) 
 
 	$graphheightmultiplier=5;
 	$keyprepend="";
-	$querychart="select (concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.") as res_time, count(alert.id) as res_cnt, SUBSTRING_INDEX(location.name, '->', -1) as res_field
+	$querychart="select ANY_VALUE((concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.")) as res_time, count(alert.id) as res_cnt, SUBSTRING_INDEX(location.name, '->', -1) as res_field
 		from alert, location, signature ".$wherecategory_tables."
 		where signature.level>=$inputlevel
 		and alert.location_id=location.id
@@ -60,7 +60,7 @@ if((isset($_GET['field']) && $_GET['field']=='path') || (!isset($_GET['field']) 
 }elseif((isset($_GET['field']) && $_GET['field']=='level') || (!isset($_GET['field']) && $glb_graphbreakdown=="level") ){
 	$graphheightmultiplier=2;
 	$keyprepend="Lvl: ";
-	$querychart="select (concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.") as res_time, count(alert.id) as res_cnt, signature.level as res_field
+	$querychart="select ANY_VALUE((concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.")) as res_time, count(alert.id) as res_cnt, signature.level as res_field
 		from alert, location, signature ".$wherecategory_tables."
 		where signature.level>=$inputlevel
 		and alert.location_id=location.id
@@ -75,7 +75,7 @@ if((isset($_GET['field']) && $_GET['field']=='path') || (!isset($_GET['field']) 
 }elseif((isset($_GET['field']) && $_GET['field']=='rule_id') || (!isset($_GET['field']) && $glb_graphbreakdown=="rule_id")){
 	$graphheightmultiplier=8;
 	$keyprepend="";
-	$querychart="select (concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.") as res_time, count(alert.id) as res_cnt, CONCAT(alert.rule_id, ' ', signature.description) as res_field
+	$querychart="select ANY_VALUE((concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.")) as res_time, count(alert.id) as res_cnt, CONCAT(alert.rule_id, ' ', signature.description) as res_field
 		from alert, location, signature ".$wherecategory_tables."
 		where signature.level>=$inputlevel
 		and alert.location_id=location.id
@@ -92,7 +92,7 @@ if((isset($_GET['field']) && $_GET['field']=='path') || (!isset($_GET['field']) 
 
 	$graphheightmultiplier=1;
 	$keyprepend="";
-	$querychart="select (concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.") as res_time, count(alert.id) as res_cnt, SUBSTRING_INDEX(SUBSTRING_INDEX(location.name, ' ', 1), '->', 1) as res_field
+	$querychart="select ANY_VALUE((concat(substring(alert.timestamp, 1, $substrsize), '$zeros')+".$halfperiod.")) as res_time, count(alert.id) as res_cnt, SUBSTRING_INDEX(SUBSTRING_INDEX(location.name, ' ', 1), '->', 1) as res_field
 		from alert, location, signature ".$wherecategory_tables."
 		where signature.level>=$inputlevel
 		and alert.location_id=location.id
@@ -106,7 +106,7 @@ if((isset($_GET['field']) && $_GET['field']=='path') || (!isset($_GET['field']) 
 }
 
 
-$resultchart=mysql_query($querychart, $db_ossec);
+$resultchart=mysqli_query($db_ossec, $querychart);
 
 $tmpdate="";
 $timegrouping=array();
@@ -121,7 +121,7 @@ $datafound=0;
 
 ## Informal note, I hate this section of code, it will be rewritten.
 
-while($rowchart = @mysql_fetch_assoc($resultchart)){
+while($rowchart = @mysqli_fetch_assoc($resultchart)){
 
 	$datafound=1;
 
@@ -231,15 +231,15 @@ if($glb_debug==1){
 	$nochartdata="";
 	$problem=0;
 
-	if(function_exists('mysql_connect')){
+	if(function_exists('mysqli_connect')){
 		$sqlmodule="yes";
 	}else{
 		$problem=1;
 		$sqlmodule="no!<br/>";
-		$sqlmodule.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fix - https://www.google.co.uk/#q=php+mysql_connect";
+		$sqlmodule.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fix - https://www.google.co.uk/#q=php+mysqli_connect";
 	}
 
-	if(mysql_connect (DB_HOST_O, DB_USER_O, DB_PASSWORD_O)){
+	if(mysqli_connect (DB_HOST_O, DB_USER_O, DB_PASSWORD_O)){
 		$mysqlconnect="yes";
 	}else{
 		$problem=1;
@@ -247,14 +247,14 @@ if($glb_debug==1){
 		$mysqlconnect.="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fix - ";
 	}
 
-	if(mysql_query("SELECT 1 from agent", $db_ossec)
-	&& mysql_query("SELECT 1 from alert", $db_ossec)
-	&& mysql_query("SELECT 1 from category", $db_ossec)
-	&& mysql_query("SELECT 1 from data", $db_ossec)
-	&& mysql_query("SELECT 1 from location", $db_ossec)
-	&& mysql_query("SELECT 1 from server", $db_ossec)
-	&& mysql_query("SELECT 1 from signature", $db_ossec)
-	&& mysql_query("SELECT 1 from signature_category_mapping", $db_ossec)){
+	if(mysqli_query($db_ossec,"SELECT 1 from agent")
+	&& mysqli_query($db_ossec,"SELECT 1 from alert")
+	&& mysqli_query($db_ossec,"SELECT 1 from category")
+	&& mysqli_query($db_ossec,"SELECT 1 from data")
+	&& mysqli_query($db_ossec,"SELECT 1 from location")
+	&& mysqli_query($db_ossec,"SELECT 1 from server")
+	&& mysqli_query($db_ossec,"SELECT 1 from signature")
+	&& mysqli_query($db_ossec,"SELECT 1 from signature_category_mapping")){
 		$databaseschema="yes";
 	}else{
 		$problem=1;
@@ -291,8 +291,8 @@ if($glb_debug==1){
 
 function checktable($table){
 	$query="SELECT max(id) as cnt from ".$table.";";
-	$result=mysql_query($query);
-	$row = @mysql_fetch_assoc($result);
+	$result=mysqli_query($query);
+	$row = @mysqli_fetch_assoc($result);
 	if($row['cnt']>0){
 		return 1;
 	}else{
